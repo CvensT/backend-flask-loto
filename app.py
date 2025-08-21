@@ -12,28 +12,23 @@ if str(SCRIPTS_DIR) not in sys.path:
 
 # === Importer la fonction métier ===
 try:
-   from scripts.loto_gen.generateur_ultra_plus import generer_combinaisons_depuis_web
+    from scripts.loto_gen.generateur_ultra_plus import generer_combinaisons_depuis_web
 except Exception as e:
     print(f"[BOOT] Échec import generateur_ultra_plus: {e}", flush=True)
     generer_combinaisons_depuis_web = None
 
 # === Initialiser Flask ===
 app = Flask(__name__)
-CORS(app)  # Autorise les appels cross-origin (frontend)
+CORS(app)
 
-# === Route de santé pour Render ===
+# === Route de santé (Render check) ===
 @app.get("/health")
 def health():
     return jsonify({"ok": True}), 200
 
-# === Endpoint principal pour générer les combinaisons ===
+# === Endpoint principal ===
 @app.post("/api/generer")
 def generer():
-    """
-    Reçoit un JSON : {"loterie": "2", "blocs": 2}
-    - loterie : "1"=Grande Vie, "2"=Lotto Max, "3"=6/49
-    - blocs : nombre de blocs à générer
-    """
     if generer_combinaisons_depuis_web is None:
         return jsonify({"ok": False, "error": "Générateur indisponible (import)."}), 500
 
@@ -42,7 +37,6 @@ def generer():
         loterie = str(data.get("loterie", "2"))
         blocs = int(data.get("blocs", 1))
 
-        # Validation de base
         if loterie not in {"1", "2", "3"}:
             return jsonify({"ok": False, "error": "Loterie invalide."}), 400
         if not (1 <= blocs <= 20):
@@ -63,10 +57,11 @@ def generer():
         print(f"[ERREUR API] {e}", flush=True)
         return jsonify({"ok": False, "error": str(e)}), 500
 
-# === Démarrage local ou Render ===
+# === Lancement local ===
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", "5050"))  # Render injecte PORT
+    port = int(os.environ.get("PORT", "5050"))
     app.run(host="0.0.0.0", port=port, debug=True)
+
 
 
 
