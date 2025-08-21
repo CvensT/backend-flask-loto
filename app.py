@@ -12,7 +12,7 @@ if str(SCRIPTS_DIR) not in sys.path:
 
 # === Importer la fonction métier ===
 try:
-    from loto_gen.generateur_ultra_plus import generer_combinaisons_depuis_web
+   from scripts.loto_gen.generateur_ultra_plus import generer_combinaisons_depuis_web
 except Exception as e:
     print(f"[BOOT] Échec import generateur_ultra_plus: {e}", flush=True)
     generer_combinaisons_depuis_web = None
