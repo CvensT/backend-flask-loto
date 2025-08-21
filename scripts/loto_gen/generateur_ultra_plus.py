@@ -734,25 +734,27 @@ def menu_principal():
             break
 
 # --- API simple pour le backend / exécution non-interactive ---
-def generer_combinaisons_depuis_web(loterie_id: str, nb_blocs: int, mode: str = "Gb"):
-    """
-    Retourne une liste de dicts:
-    [{"bloc": int, "combinaison": [..], "etoile": bool}, ...]
-    """
-    cfg = LOTERIES.get(str(loterie_id))
+def generer_combinaisons_depuis_web(loterie_id: str, nb_blocs: int):
+    from .generateur_ultra_plus import generer_par_blocs, LOTERIES
+
+    cfg = LOTERIES.get(loterie_id)
     if not cfg:
-        return {"error": "Loterie invalide."}
-    if mode.lower() != "gb":
-        return {"error": "Seul le mode 'Gb' (génération par blocs) est supporté en API."}
+        raise ValueError("Loterie invalide")
 
-    par_bloc = cfg["par_bloc_base"] + 1
-    total = nb_blocs * par_bloc
-    combis, _ = generer_par_blocs(cfg, total)
+    total_combis = nb_blocs * (cfg["par_bloc_base"] + 1)
 
-    return [
-        {"bloc": bloc, "combinaison": list(comb), "etoile": is_star}
-        for (bloc, comb, is_star) in combis
+    combis, _ = generer_par_blocs(cfg, total_combis)
+
+    resultat = [
+        {
+            "bloc": bloc,
+            "combinaison": comb,
+            "etoile": is_star
+        }
+        for bloc, comb, is_star in combis
     ]
+    return resultat
+
 
 # --- Entrée principale ---
 if __name__ == "__main__":
