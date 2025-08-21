@@ -3,7 +3,7 @@ services:
     name: backend-flask-loto
     runtime: python
     plan: free
-    startCommand: gunicorn -w 2 -k gthread -t 180 -b 0.0.0.0:$PORT app:app
+   startCommand: gunicorn -w 2 -k gthread -t 180 -b 0.0.0.0:$PORT backend.app:app
     autoDeploy: true
     envVars:
       - key: FLASK_ENV
